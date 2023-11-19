@@ -1,0 +1,55 @@
+-------------------------------------
+Zs: (20+0j), Zt: (50+0j)
+reversed only
+
+Cs: 2.66pF Lp: 2.66nH
+Ls: 1.6nH Cp: 1.6pF
+
+-------------------------------------
+Zs: (20-10j), Zt: (60+60j)
+reversed only
+
+Cs: 1.88pF Lp: 6.33nH
+Ls: 3.57nH Cp: 1.76pF
+
+-------------------------------------
+Zs: (100+75j), Zt: 30
+Normal only
+
+Lp: 7.83nH Cs: 1.06pF
+Cp: 1.17pF Ls: 4.01nH
+
+-------------------------------------
+Zs: (15+50j), Zt: (50+0j)
+Normal and reversed
+
+Cp: 0.614pF Cs: 0.804pF
+Cp: 1.78pF Ls: 5.29nH
+Cs: 0.895pF Lp: 2.14nH
+Cs: 2.41pF Cp: 1.99pF
+
+-------------------------------------
+Zs: (15+50j), Zt: (50-10j)
+Normal and reversed
+
+Cp: 0.614pF Cs: 0.917pF
+Cp: 1.78pF Ls: 5.94nH
+Cs: 0.887pF Lp: 1.92nH
+Cs: 2.47pF Cp: 1.72pF
+
+-------------------------------------
+Zs: (30-45j), Zt: (45-30j)
+Normal and reversed
+
+Lp: 2.46nH Cs: 3.51pF
+Lp: 15.1nH Ls: 5.13nH
+Ls: 0.822nH Lp: 2.43nH
+Ls: 5.05nH Cp: 0.415pF
+
+-------------------------------------
+Zs: (120+0j), Zt: (60+0j)
+Normal only
+
+Lp: 7.83nH Cs: 1.09pF
+Cp: 0.544pF Ls: 3.91nH
+

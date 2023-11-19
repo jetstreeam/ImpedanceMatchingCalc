@@ -46,9 +46,9 @@ def calcSparameters(impedances, z0, z11, z12, z21, z22):
 
     X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
     
-    #print(Rs,Xs,Rt,Xt)
+    print(Rs,Xs,Rt,Xt)
 
-    #print(X11,X12,X21,X22)
+    print(X11,X12,X21,X22)
     # for X1
     frequencies = np.linspace(1,10,100) * 1e9
 
@@ -94,6 +94,10 @@ def calcSparameters(impedances, z0, z11, z12, z21, z22):
     
     return (s11, s12, s21, s22)
 
+
+
+
+
 def getX1(X1):
     if X1 > 0:
         L = calcL(X1)
@@ -126,13 +130,8 @@ def getX2(X2):
             C*=1e12
             return(f"Cs: {C:.3g}pF")
 
-Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50},
-            {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50},
-            {'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j},
-            {'Z_s': 15+50j, 'Z_t': 50+0j, 'Z_0': 30},
-            {'Z_s': 15+50j, 'Z_t': 50-10j, 'Z_0': 30},
-            {'Z_s': 30-45j, 'Z_t': 45-30j, 'Z_0': 30},
-            {'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50}
+Zpairs = [{'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j}
+          
           ]
 '''
 {'Z_s': 13+60j, 'Z_t': 13-60j},
@@ -149,7 +148,6 @@ Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50},
 '''
 
 for p in Zpairs:
-    print("-------------------------------------")
     print(f"Zs: {p['Z_s']}, Zt: {p['Z_t']}")
 
     Rs = p['Z_s'].real
@@ -162,7 +160,7 @@ for p in Zpairs:
     if Rs > Rt:
         if abs(Xt) >= sqrt(Rt*(Rs-Rt)):
             # Normal and reversed
-            print("Normal and reversed")
+            #print("Normal and reversed")
             
             X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
             print()
@@ -176,7 +174,7 @@ for p in Zpairs:
 
         else:
             # Normal only
-            print("Normal only")
+            #print("Normal only")
 
             X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
             print()
@@ -184,31 +182,65 @@ for p in Zpairs:
             print(f"{getX1(X12)} {getX2(X22)}")
             print()
 
-            #s11, s12, s21, s22 = calcSparameters(impedances = p, z0 = Z0, z11=1j*X11, z12=1j*X11, z21=1j*X11, z22=1j*X11+1j*X21)
+            s11, s12, s21, s22 = calcSparameters(impedances = p, z0 = Z0, z11=1j*X11, z12=1j*X11, z21=1j*X11, z22=1j*X11+1j*X21)
+            
+            skrfpath = os.path.dirname(rf.__file__)
+            #datafile = os.path.join(skrfpath, 'data', 'ntwk1.s2p')
+            datafile = os.path.join(os.curdir, 'mynetwk.s2p')
+            print(datafile)
+
+            # create a network object with
+            # rf.Network(/path/to/filename.s2p)
+            nw = rf.Network(datafile)
+
+            ring_slot = nw
+            ring_slot.plot_s_smith()
+
+
+            # print it
+            print(nw)
+
+
+
+
 
     # Rs < Rt
     else:
         if abs(Xs) >= sqrt(Rs*(Rt-Rs)):
             # Normal and reversed
-            print("Normal and reversed")
+            #print("Normal and reversed")
 
             X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
             print()
             print(f"{getX1(X11)} {getX2(X21)}")
             print(f"{getX1(X12)} {getX2(X22)}")
 
+            '''z11 = 1j*X11
+            z12 = 1j*X11
+            z21 = 1j*X1
+            z22 = 1j*X1+1j*X2
+            '''
             X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
-            print(f"{getX2(X21)} {getX1(X11)}")
-            print(f"{getX2(X22)} {getX1(X12)}")
-            print()
-
-        else:
-            # reversed only
-            print("reversed only")
-
-            X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
-            print()
             print(f"{getX2(X21)} {getX1(X11)}")
             print(f"{getX2(X22)} {getX1(X12)}")
             print()
             
+            '''z11 = 1j*X1+1j*X2
+            z12 = 1j*X1
+            z21 = 1j*X1
+            z22 = 1j*X2'''
+
+        else:
+            # reversed only
+            #print("reversed only")
+
+            X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
+            print()
+            print(f"{getX2(X21)} {getX1(X11)}")
+            print(f"{getX2(X22)} {getX1(X12)}")
+            print()
+
+            '''z11 = 1j*X1+1j*X2
+            z12 = 1j*X1s
+            z21 = 1j*X1
+            z22 = 1j*X2'''
