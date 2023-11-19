@@ -98,33 +98,41 @@ def getParallelElement(X):
     if X > 0:
         L = calcL(X)
         if L == 0:
-            return(f"Lp: open")
+            #return(f"Lp: open")
+            return ('Lp', float("inf"), 'nH')
         else:
-            L*=1e9
-            return(f"Lp: {L:.3g}nH")
+            #L*=1e9
+            #return(f"Lp: {L:.3g}nH")
+            return ('Lp', L, 'nH')
     else:
         C = calcC(abs(X))
         if C == 0:
-            return(f"Cp: open")
+            #return(f"Cp: open")
+            return ('Cp', 0, 'pF')
         else:
-            C*=1e12
-            return(f"Cp: {C:.3g}pF")
+            #C*=1e12
+            #return(f"Cp: {C:.3g}pF")
+            return ('Cp', C, 'pF')
 
 def getSerialElement(X):
     if X > 0:
         L = calcL(X)
         if L == 0:
-            return(f"Ls: short")
+            #return(f"Ls: short")
+            return ('Ls', 0, 'nH')
         else:
-            L*=1e9
-            return(f"Ls: {L:.3g}nH")
+            #L*=1e9
+            #return(f"Ls: {L:.3g}nH")
+            return ('Ls', L, 'nH')
     else:
         C = calcC(abs(X))
         if C == 0:
-            return(f"Cs: short")
+            #return(f"Cs: short")
+            return ('Cs', 0, 'pF')
         else:
-            C*=1e12
-            return(f"Cs: {C:.3g}pF")
+            #C*=1e12
+            #return(f"Cs: {C:.3g}pF")
+            return ('Cs', C, 'pF')
         
 
 
@@ -171,10 +179,39 @@ for p in Zpairs:
     # print resulting networks
     if 'normal' in r.keys():
         X11, X12, X21, X22, Q = r['normal']
-        print(f"{getParallelElement(X11)} {getSerialElement(X21)}")
-        print(f"{getParallelElement(X12)} {getSerialElement(X22)}\n")
+
+        ParElem1_name, ParElem1_value, ParElem1_unit = getParallelElement(X11)
+        SerElem1_name, SerElem1_value, SerElem1_unit = getSerialElement(X21)
+        ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12)
+        SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22)
+
+        ParElem1_value = ParElem1_value * 1e9 if ParElem1_name == 'Lp' else ParElem1_value * 1e12
+        SerElem1_value = SerElem1_value * 1e9 if SerElem1_name == 'Ls' else SerElem1_value * 1e12
+        ParElem2_value = ParElem2_value * 1e9 if ParElem2_name == 'Lp' else ParElem2_value * 1e12
+        SerElem2_value = SerElem2_value * 1e9 if SerElem2_name == 'Ls' else SerElem2_value * 1e12
+
+        print(f"{ParElem1_name}: {ParElem1_value:.3g}{ParElem1_unit} {SerElem1_name}: {SerElem1_value:.3g}{SerElem1_unit}")
+        print(f"{ParElem2_name}: {ParElem2_value:.3g}{ParElem2_unit} {SerElem2_name}: {SerElem2_value:.3g}{SerElem2_unit}")
+
+        #print(f"{getParallelElement(X11)} {getSerialElement(X21)}")
+        #print(f"{getParallelElement(X12)} {getSerialElement(X22)}\n")
     if 'reversed' in r.keys():
         X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
-        print(f"{getSerialElement(X21)} {getParallelElement(X11)}")
-        print(f"{getSerialElement(X22)} {getParallelElement(X12)}\n")
+        
+
+        #print(f"{getSerialElement(X21)} {getParallelElement(X11)}")
+        #print(f"{getSerialElement(X22)} {getParallelElement(X12)}\n")
+
+        ParElem1_name, ParElem1_value, ParElem1_unit = getParallelElement(X11)
+        SerElem1_name, SerElem1_value, SerElem1_unit = getSerialElement(X21)
+        ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12)
+        SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22)
+
+        ParElem1_value = ParElem1_value * 1e9 if ParElem1_name == 'Lp' else ParElem1_value * 1e12
+        SerElem1_value = SerElem1_value * 1e9 if SerElem1_name == 'Ls' else SerElem1_value * 1e12
+        ParElem2_value = ParElem2_value * 1e9 if ParElem2_name == 'Lp' else ParElem2_value * 1e12
+        SerElem2_value = SerElem2_value * 1e9 if SerElem2_name == 'Ls' else SerElem2_value * 1e12
+
+        print(f"{SerElem1_name}: {SerElem1_value:.3g}{SerElem1_unit} {ParElem1_name}: {ParElem1_value:.3g}{ParElem1_unit}")
+        print(f"{SerElem2_name}: {SerElem2_value:.3g}{SerElem2_unit} {ParElem2_name}: {ParElem2_value:.3g}{ParElem2_unit}")
 
