@@ -314,12 +314,13 @@ def calc_circle(c, r):
   print(c + r*np.exp(1.0j*theta))
   return c + r*np.exp(1.0j*theta)
 
-c,r=0.4,0.2
+c,r= 1,1
+
 fig = go.Figure(go.Scattersmith(imag=np.imag(calc_circle(c, r)), 
-                                real=np.real(calc_circle(c, r)),
-                                marker_color="green",
-                                showlegend=True,
-                                name='Hello'))
+                                    real=np.real(calc_circle(c, r)),
+                                    marker_color="blue",
+                                    showlegend=True,
+                                    name='Hello'))
 fig.show()
 
 
@@ -350,5 +351,4 @@ ring_slot.plot_s_smith()
 
 # print it
 print(nw)
-
 
