@@ -1,28 +1,6 @@
 #%%
-
 from math import sqrt
 import numpy as np
-from si_prefix import si_format
-import skrf as rf
-from skrf import Network
-import os
-from si_prefix import si_format
-
-n = [.5, .000001331, 1332, 123.5]
-
-'''si_prefixes = {'': '',
-               
-               '-18': ['a', 1],
-               '-15': ['f', 1],
-               '-12': ['p', 1],
-               '-09': ['n', 1],
-               '-06': ['u', 1],
-               '-03': ['m', 1],
-               '-02': ['m', 10],
-               '+03': ['k', 1],
-               '+06': ['M', 1],
-               '+09': ['G', 1]
-               }'''
 
 si_prefixes = {'0': '',
                '-18': 'a',
@@ -43,25 +21,13 @@ f0 = 2.44e9
 cap_lim = 0.9e-1
 ind_lim = 1e-5
 
-'''def addSiPrefix(number:float):
-    # returns the number with added SI-Prefix
-    n = format(number,'.3g').split('e')
-    if len(n) > 1:
-        z = si_prefixes[format(number,'.3g').split('e')[1]]
-    else:
-        z = ''
-    return(n[0]+z)'''
-
 def addSiPrefix(number):
     # returns the number with added SI-Prefix
     a = str(format(number,'.2e'))               # display number in scientific notation with 3 significant figures
     exp = float(a[-3:])                         # get exponent of number
     a = str(round((float(a[:-4])) * 10**(exp%3), 6))    # adapt to multiple of 3 
     a = a.replace('.0', '') if a[-2:] == '.0' else a    # replace .0 if it is at end of number
-    exp2 = str(int(exp-(exp%3)))                # get new exponent with multiple of 3
-    
-    print(f"------------- {number}     ", f"{a}{si_prefixes[exp2]}")
-    
+    exp2 = str(int(exp-(exp%3)))                # get new exponent with multiple of 3    
     return(f"{a}{si_prefixes[exp2]}")           #return number with prefix out of dict
 
 def calcL(X, f=f0):
@@ -158,11 +124,6 @@ for p in Zpairs:
         ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12)
         SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22)
 
-        '''ParElem1_value = ParElem1_value * 1e9 if ParElem1_name == 'Lp' else ParElem1_value * 1e12
-        SerElem1_value = SerElem1_value * 1e9 if SerElem1_name == 'Ls' else SerElem1_value * 1e12
-        ParElem2_value = ParElem2_value * 1e9 if ParElem2_name == 'Lp' else ParElem2_value * 1e12
-        SerElem2_value = SerElem2_value * 1e9 if SerElem2_name == 'Ls' else SerElem2_value * 1e12'''
-
         print(f"{ParElem1_name}: {addSiPrefix(ParElem1_value)}{ParElem1_unit} {SerElem1_name}: {addSiPrefix(SerElem1_value)}{SerElem1_unit}")
         print(f"{ParElem2_name}: {addSiPrefix(ParElem2_value)}{ParElem2_unit} {SerElem2_name}: {addSiPrefix(SerElem2_value)}{SerElem2_unit}")
 
@@ -174,91 +135,5 @@ for p in Zpairs:
         ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12)
         SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22)
 
-        '''ParElem1_value = ParElem1_value * 1e9 if ParElem1_name == 'Lp' else ParElem1_value * 1e12
-        SerElem1_value = SerElem1_value * 1e9 if SerElem1_name == 'Ls' else SerElem1_value * 1e12
-        ParElem2_value = ParElem2_value * 1e9 if ParElem2_name == 'Lp' else ParElem2_value * 1e12
-        SerElem2_value = SerElem2_value * 1e9 if SerElem2_name == 'Ls' else SerElem2_value * 1e12'''
-
-        '''print(f"{SerElem1_name}: {SerElem1_value:.3g}{SerElem1_unit} {ParElem1_name}: {ParElem1_value:.3g}{ParElem1_unit}")
-        print(f"{SerElem2_name}: {SerElem2_value:.3g}{SerElem2_unit} {ParElem2_name}: {ParElem2_value:.3g}{ParElem2_unit}")'''
-
         print(f"{SerElem1_name}: {addSiPrefix(SerElem1_value)}{SerElem1_unit} {ParElem1_name}: {addSiPrefix(ParElem1_value)}{ParElem1_unit}")
         print(f"{SerElem2_name}: {addSiPrefix(SerElem2_value)}{SerElem2_unit} {ParElem2_name}: {addSiPrefix(SerElem2_value)}{ParElem2_unit}")
-
-
-
-
-#%%
-from decimal import Decimal
-n = [1234.5,
-    123.45,
-    12.345,
-    1.2345,
-    0.12345,
-    0.012345,
-    0.0012345,
-    0.00012345,
-    0.000012345,
-    0.0000012345,
-    0.00000012345,
-    0.000000012345,
-    0.0000000012345,
-    0.00000000012345,
-    0.000000000012345,
-    2.6628989113172e-12,
-    2.427185315660973e-09,
-    8.945941657750092e-13,
-    1.0598733802121223e-12,
-     ]
-
-
-'''si_prefixes = {'': '',
-               '-18': ['a', 1],
-               '-15': ['f', 1],
-               '-12': ['p', 1],
-               '-09': ['n', 1],
-               '-06': ['u', 1],
-               '-03': ['m', 1],
-               '-02': ['m', 10],
-               '+03': ['k', 1],
-               '+06': ['M', 1],
-               '+09': ['G', 1]
-               }'''
-
-si_prefixes = {'0': '',
-               '-18': 'a',
-               '-15': 'f',
-               '-12': 'p',
-               '-9': 'n',
-               '-6': 'u',
-               '-3': 'm',
-               '-2': 'm',
-               '3': 'k',
-               '6': 'M',
-               '9': 'G'
-               }
-
-def addSiPrefix(number):
-    # returns the number with added SI-Prefix
-    a = str(format(number,'.2e'))               # display number in scientific notation with 3 significant figures
-    exp = float(a[-3:])                         # get exponent of number
-    a = str(round((float(a[:-4])) * 10**(exp%3), 3))    # adapt to multiple of 3 
-    a = a.replace('.0', '') if a[-2:] == '.0' else a    # replace .0 if it is at end of number
-    exp2 = str(int(exp-(exp%3)))                # get new exponent with multiple of 3
-    return(f"{a}{si_prefixes[exp2]}")           #return number with prefix out of dict
-    
-    
-    #print(exp, float(exp)%3)
-
-
-    '''
-    if len(n) > 1:
-        z = si_prefixes[format(number,'.3g').split('e')[1]]
-    else:
-        z = ''
-    return(n[0]+z)'''
-
-    
-
-for i in n:
-    print(addSiPrefix(i))
