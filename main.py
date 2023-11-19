@@ -94,37 +94,39 @@ def calcSparameters(impedances, z0, z11, z12, z21, z22):
     
     return (s11, s12, s21, s22)
 
-def getX1(X1):
-    if X1 > 0:
-        L = calcL(X1)
+def getParallelElement(X):
+    if X > 0:
+        L = calcL(X)
         if L == 0:
-            (f"Lp: open")
+            return(f"Lp: open")
         else:
             L*=1e9
             return(f"Lp: {L:.3g}nH")
     else:
-        C = calcC(abs(X1))
+        C = calcC(abs(X))
         if C == 0:
             return(f"Cp: open")
         else:
             C*=1e12
             return(f"Cp: {C:.3g}pF")
 
-def getX2(X2):
-    if X2 > 0:
-        L = calcL(X2)
+def getSerialElement(X):
+    if X > 0:
+        L = calcL(X)
         if L == 0:
             return(f"Ls: short")
         else:
             L*=1e9
             return(f"Ls: {L:.3g}nH")
     else:
-        C = calcC(abs(X2))
+        C = calcC(abs(X))
         if C == 0:
             return(f"Cs: short")
         else:
             C*=1e12
             return(f"Cs: {C:.3g}pF")
+        
+
 
 Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50},
             {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50},
@@ -138,19 +140,14 @@ Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50},
 {'Z_s': 13+60j, 'Z_t': 13-60j},
 {'Z_s': 60-30j, 'Z_t': 60+0j},
 {'Z_s': 60+20j, 'Z_t': 60+80j}
-
-{'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50}
-{'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50},
-{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50},
-{'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j},
-{'Z_s': 15+50j, 'Z_t': 50+0j, 'Z_0': 30},
-{'Z_s': 15+50j, 'Z_t': 50-10j, 'Z_0': 30},
-{'Z_s': 30-45j, 'Z_t': 45-30j, 'Z_0': 30},
 '''
 
 for p in Zpairs:
-    print("-------------------------------------")
-    print(f"Zs: {p['Z_s']}, Zt: {p['Z_t']}")
+    layout = ''
+    r = {}
+
+    print("---------------------------")
+    print(f"Zs: {p['Z_s']}, Zt: {p['Z_t']}\n")
 
     Rs = p['Z_s'].real
     Xs = p['Z_s'].imag
@@ -160,55 +157,24 @@ for p in Zpairs:
 
     # Rs > Rt
     if Rs > Rt:
+        r['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
         if abs(Xt) >= sqrt(Rt*(Rs-Rt)):
-            # Normal and reversed
-            print("Normal and reversed")
-            
-            X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
-            print()
-            print(f"{getX1(X11)} {getX2(X21)}")
-            print(f"{getX1(X12)} {getX2(X22)}")
-
-            X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
-            print(f"{getX2(X21)} {getX1(X11)}")
-            print(f"{getX2(X22)} {getX1(X12)}")
-            print()
-
-        else:
-            # Normal only
-            print("Normal only")
-
-            X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
-            print()
-            print(f"{getX1(X11)} {getX2(X21)}")
-            print(f"{getX1(X12)} {getX2(X22)}")
-            print()
-
-            #s11, s12, s21, s22 = calcSparameters(impedances = p, z0 = Z0, z11=1j*X11, z12=1j*X11, z21=1j*X11, z22=1j*X11+1j*X21)
+            r['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
 
     # Rs < Rt
     else:
+        r['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
         if abs(Xs) >= sqrt(Rs*(Rt-Rs)):
             # Normal and reversed
-            print("Normal and reversed")
+            r['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
+    
+    # print resulting networks
+    if 'normal' in r.keys():
+        X11, X12, X21, X22, Q = r['normal']
+        print(f"{getParallelElement(X11)} {getSerialElement(X21)}")
+        print(f"{getParallelElement(X12)} {getSerialElement(X22)}\n")
+    if 'reversed' in r.keys():
+        X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
+        print(f"{getSerialElement(X21)} {getParallelElement(X11)}")
+        print(f"{getSerialElement(X22)} {getParallelElement(X12)}\n")
 
-            X11, X12, X21, X22, Q = calcNormalReactances(Rs,Xs,Rt,Xt)
-            print()
-            print(f"{getX1(X11)} {getX2(X21)}")
-            print(f"{getX1(X12)} {getX2(X22)}")
-
-            X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
-            print(f"{getX2(X21)} {getX1(X11)}")
-            print(f"{getX2(X22)} {getX1(X12)}")
-            print()
-
-        else:
-            # reversed only
-            print("reversed only")
-
-            X11, X12, X21, X22, Q = calcReversedReactances(Rs,Xs,Rt,Xt)
-            print()
-            print(f"{getX2(X21)} {getX1(X11)}")
-            print(f"{getX2(X22)} {getX1(X12)}")
-            print()
-            
