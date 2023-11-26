@@ -51,7 +51,8 @@ def calcSparameters(impedances, z0, z11, z12, z21, z22):
     print(X11,X12,X21,X22)
     # for X1
     frequencies = np.linspace(1,10,100) * 1e9
-
+    frequencies = np.linspace(1, 1e9, 1000)
+    print(frequencies)
     if X11 > 0:
         L = calcL(X11)        
         Z11 = np.ones_like(frequencies)*Rs + 1j*(np.ones_like(frequencies)*Xs + 2*np.pi*frequencies*L)
