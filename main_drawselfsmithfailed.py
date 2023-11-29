@@ -180,22 +180,29 @@ for p in Zpairs:
         print(f"{SerElem1_name}: {addSiPrefix(SerElem1_value)}{SerElem1_unit}, {ParElem1_name}: {addSiPrefix(ParElem1_value)}{ParElem1_unit}")
         print(f"{SerElem2_name}: {addSiPrefix(SerElem2_value)}{SerElem2_unit}, {ParElem2_name}: {addSiPrefix(SerElem2_value)}{ParElem2_unit}")
 
-        # SMITHCHART VARIANT ONE
 
-        print(X21,X11)
-        print(X22,X12)
+        fig, ax = plt.subplots(figsize=(8.0, 8.0))
+
+        s1 = SmithChart(fig=fig, ax=ax)
+        #s1.markZ(20+30j)
 
         z_s = np.linspace(0,X21/Z0,100) + Xs/Z0
         r_s = np.ones_like(z_s)*Rs/Z0
 
+
         start = (r_s[-1]+1j*z_s[-1])
+
         way = 1/np.linspace(1/start,(1/(X11/Z0)),100)
         
         r_s=np.append(r_s,way.real)
         z_s=np.append(z_s,way.imag)
 
+        res = (z_s+r_s*1j)*50
+
+        print(res)
+
+        for i in res:
+            print(i)
+            s1.markZ(complex(i.real, i.imag))
         
-        o = np.array([Xs/Z0, Xt/Z0])
-        
-        fig = go.Figure(go.Scattersmith(imag=z_s, real=r_s))
-        fig.show()
+        s1.markZ(20-10j)
