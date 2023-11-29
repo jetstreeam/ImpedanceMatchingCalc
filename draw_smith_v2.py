@@ -56,11 +56,23 @@ class smith:
         Draws a circle with constant real part of impedance.
         """
         zlst = [x]+[complex(x, z) for z in np.logspace(0, 6, npts)]
+        print(zlst)
         self.drawZList(zlst, 'r')
 
         zlst = [x]+[complex(x, -z) for z in np.logspace(0, 6, npts)]
 
-        self.drawZList(zlst, 'r')
+        self.drawZList(zlst, 'g')
+
+    def drawGCircle(self, x, npts=200):
+        """
+        Draws a circle with constant real part of admittance.
+        """
+        #x = 1/x
+        zlst = [x]+[complex(x, z) for z in np.logspace(0, 6, npts)]
+        self.drawZList(zlst, 'b')
+        zlst = [x]+[complex(x, -z) for z in np.logspace(0, 6, npts)]
+        self.drawZList(zlst, 'y')
+
 
     def drawYCircle(self, y, npts=200):
         """
@@ -85,14 +97,21 @@ class smith:
         Draws the Smith Chart grid.
         """
         self.drawXCircle(0)
-        self.drawXCircle(self.Z0/5)
+        self.drawXCircle(self.Z0*5)
+
+
+        '''self.drawXCircle(self.Z0/5)
+        self.drawXCircle(self.Z0/2)
+        #self.drawGCircle(self.Z0/5)
         self.drawXCircle(self.Z0/2)
         self.drawXCircle(self.Z0)
-        self.drawXCircle(self.Z0*2)
-        self.drawXCircle(self.Z0*5)
+        self.drawXCircle(self.Z0*2)'''
+        
+
         self.drawYCircle(0)
         self.drawYCircle(self.Z0/5)
-        self.drawYCircle(-self.Z0/5)
+        
+        '''self.drawYCircle(-self.Z0/5)
         self.drawYCircle(self.Z0/2)
         self.drawYCircle(-self.Z0/2)
         self.drawYCircle(self.Z0)
@@ -100,7 +119,7 @@ class smith:
         self.drawYCircle(self.Z0*2)
         self.drawYCircle(-self.Z0*2)
         self.drawYCircle(self.Z0*5)
-        self.drawYCircle(-self.Z0*5)
+        self.drawYCircle(-self.Z0*5)'''
 
     def z2gamma(self, zl):
         """
@@ -116,7 +135,7 @@ class smith:
 
 if __name__ == '__main__':
     smith = smith()
-    #smith.markZ(20+30j)
-    #smith.markZ(130-60j, text='Z1', c='r')
+    smith.markZ(20+30j)
+    smith.markZ(130-60j, text='Z1', c='r')
     #smith.drawZList([0, 50j, 10000j, -50j, 0])
     smith.show()
