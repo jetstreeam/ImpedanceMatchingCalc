@@ -25,7 +25,7 @@ def addSiPrefix(number):
     """
     returns the number with added SI-Prefix
     """
-    if number == 0:
+    if number == float("inf"):
         return ''
     else:
         a = str(format(number,'.2e'))               # display number in scientific notation with 3 significant figures
@@ -90,7 +90,7 @@ def getParallelElement(X, f):
     returns the calculated parallel L or C value with units
     """
     if X == float("inf"):
-        return ('no shunt element',0,'')
+        return ('inf',float("inf"),'')
     elif X > 0:
         L = calcL(X,f)
         return ('Lp', L, 'H')
@@ -103,14 +103,32 @@ def getSerialElement(X,f):
     returns the calculated serial L or C value with units
     """
     if X == float("inf"):
-        return ('short',0,'')
+        return ('inf',float("inf"),'')
     elif X > 0:
         L = calcL(X,f)
         return ('Ls', L, 'H')
     else:
         C = calcC(abs(X),f)
         return ('Cs', C, 'F')
-        
+
+def printFormater(nameShunt:str, nameSerial:str, valueShunt:float, valueSerial:float, unitShunt:str, unitSerial:str, networktype='normal'):
+    """
+    prints a found network
+    """
+    if abs(valueShunt) == float("inf"):
+        shunt = f"no shunt element"
+    else:
+        shunt = f"{nameShunt}: {addSiPrefix(valueShunt)}{unitShunt}"
+    if abs(valueSerial) == 0:
+        serial = f"no serial element"
+    else:
+        serial = f"{nameSerial}: {addSiPrefix(valueSerial)}{unitSerial}"
+
+    if networktype == 'normal': 
+        return f"{shunt}, {serial}"
+    else:
+        return f"{serial}, {shunt}"
+
 # define start and target impedance pairs
 Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50, 'f_0': 2.44e9},
@@ -124,9 +142,7 @@ Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 60+20j, 'Z_t': 60+80j, 'Z_0': 60, 'f_0': 2.44e9}
           ]
 
-Zpairs = [{'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50, 'f_0': 2.44e9}
-          ]
-
+#Zpairs = [{'Z_s': 60-30j, 'Z_t': 60+0j, 'Z_0': 60, 'f_0': 2.44e9}]
 
 # iterate all impedance pairs and print calculated networks
 for p in Zpairs:
@@ -161,25 +177,43 @@ for p in Zpairs:
     
     # print resulting networks
     if 'normal' in r.keys():
+        print(f"Network: normal")
         X11, X12, X21, X22, Q = r['normal']
+
         ParElem1_name, ParElem1_value, ParElem1_unit = getParallelElement(X11,f0)
         SerElem1_name, SerElem1_value, SerElem1_unit = getSerialElement(X21,f0)
         ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12,f0)
         SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22,f0)
 
-        print(f"{ParElem1_name}: {addSiPrefix(ParElem1_value)}{ParElem1_unit}, {SerElem1_name}: {addSiPrefix(SerElem1_value)}{SerElem1_unit}")
-        print(f"{ParElem2_name}: {addSiPrefix(ParElem2_value)}{ParElem2_unit}, {SerElem2_name}: {addSiPrefix(SerElem2_value)}{SerElem2_unit}")
+        print(printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
+                valueShunt=ParElem1_value, valueSerial=SerElem1_value,
+                unitShunt=ParElem1_unit, unitSerial=SerElem1_unit, networktype='normal'))
+        
+        if ParElem1_value != ParElem2_value and SerElem1_value != SerElem2_value:
+            print(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
+                    valueShunt=ParElem2_value, valueSerial=SerElem2_value,
+                    unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='normal'))
 
     if 'reversed' in r.keys():
+        print(f"Network: reversed")
         X11, X12, X21, X22, Q = r['reversed']
+
         ParElem1_name, ParElem1_value, ParElem1_unit = getParallelElement(X11,f0)
         SerElem1_name, SerElem1_value, SerElem1_unit = getSerialElement(X21,f0)
         ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12,f0)
         SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22,f0)
 
-        print(f"{SerElem1_name}: {addSiPrefix(SerElem1_value)}{SerElem1_unit}, {ParElem1_name}: {addSiPrefix(ParElem1_value)}{ParElem1_unit}")
-        print(f"{SerElem2_name}: {addSiPrefix(SerElem2_value)}{SerElem2_unit}, {ParElem2_name}: {addSiPrefix(SerElem2_value)}{ParElem2_unit}")
+        print(printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
+                valueShunt=ParElem1_value, valueSerial=SerElem1_value,
+                unitShunt=ParElem1_unit, unitSerial=SerElem1_unit, networktype='reversed'))
+        
+        if ParElem1_value != ParElem2_value and SerElem1_value != SerElem2_value:
+            print(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
+                    valueShunt=ParElem2_value, valueSerial=SerElem2_value,
+                    unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='reversed'))    
+    
 
+        '''
         # SMITHCHART VARIANT ONE
 
         print(X21,X11)
@@ -198,4 +232,5 @@ for p in Zpairs:
         o = np.array([Xs/Z0, Xt/Z0])
         
         fig = go.Figure(go.Scattersmith(imag=z_s, real=r_s))
-        fig.show()
+        fig.show()'''
+

@@ -42696,3 +42696,4 @@ ImpMatchVenv
 /wscvenv/share/jupyter/nbextensions/jupyterlab-plotly/index.js.LICENSE.txt
 /wscvenv/share/man/man1/ipython.1
 /wscvenv/share/man/man1/ttx.1
+__pycache__/smithchart.cpython-311.pyc
