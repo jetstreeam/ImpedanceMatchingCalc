@@ -129,6 +129,23 @@ def printFormater(nameShunt:str, nameSerial:str, valueShunt:float, valueSerial:f
     else:
         return f"{serial}, {shunt}"
 
+def plotSmithChart(Z):
+    """
+    plots the smithchart for given values
+    """
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
+    
+    sc1 = SmithChart(fig=fig, ax=ax1)
+    sc1.markZ(20+0j, text='Z1', c='r', label='Z1')
+    sc1.legend()
+
+    sc1 = SmithChart(fig=fig, ax=ax2)
+    sc1.markZ(50+0j, text='Z1', c='r', label='Z2')
+    sc1.legend()
+
+
+
+    
 # define start and target impedance pairs
 Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50, 'f_0': 2.44e9},
@@ -175,6 +192,8 @@ for p in Zpairs:
             # Normal and reversed
             r['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
     
+    print(f"length: {len(r.keys())}")
+
     # print resulting networks
     if 'normal' in r.keys():
         print(f"Network: normal")

@@ -7,7 +7,7 @@ class SmithChart:
     Object-oriented Smith Chart drawing.
     """
 
-    def __init__(self, fig, ax, Z0=50):
+    def __init__(self, fig:plt.figure, ax:plt.axis, Z0=50):
         """
         Creates the figure and draws the grid.
         Z0: characteristic impedance
@@ -59,14 +59,15 @@ class SmithChart:
         zlst = [complex(0, y)] + [complex(z, y) for z in np.logspace(0, 6, npts)]
         self.drawZList(zlst, 'k')
 
-    def markZ(self, z, text=None, c='b', size=1):
+    def markZ(self, z, text=None, c='b', size=1, label=None):
         """
         Marks an impedance with a dot.
         """
         g = self.z2gamma(z)
-        self.ax.plot(g.real, g.imag, 'o' + c)
+        self.ax.plot(g.real, g.imag, 'o' + c, label=label)
         if text:
             self.ax.text(g.real + 0.02, g.imag + 0.02, text, color=c, weight='demi')
+        
         #plt.draw()
 
     def drawGrid(self):
@@ -79,6 +80,7 @@ class SmithChart:
         self.drawXCircle(self.Z0)
         self.drawXCircle(self.Z0*2)
         self.drawXCircle(self.Z0*5)
+        self.drawXCircle(self.Z0*10)
         self.drawYCircle(0)
         self.drawYCircle(self.Z0/5)
         self.drawYCircle(-self.Z0/5)
@@ -102,17 +104,23 @@ class SmithChart:
         Converts an admittance to a reflection coefficient.
         """
         return complex(y1 - 1 / self.Z0) / (y1 + 1 / self.Z0)
+    def legend(self):
+        """
+        shows the legend
+        """
+        self.ax.legend()
 
 if __name__ == '__main__':
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8.0, 8.0))
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
     
     sc1 = SmithChart(fig=fig, ax=ax1)
-    sc1.markZ(20+30j)
-    sc1.markZ(130-60j, text='Z1', c='r')
-    sc1.markZ(1-100j)
+    sc1.markZ(20+0j, text='Zstart', c='r', label='Zs=20+0j')
+    sc1.markZ(50+0j, text='Ztarget', c='g', label='Zt=50+0j')
+    sc1.legend()
+
     sc1 = SmithChart(fig=fig, ax=ax2)
-    sc1.markZ(20+30j)
-    sc1.markZ(130-60j, text='Z1', c='r')
-    sc1.markZ(1-100j)
+    sc1.markZ(20+0j, text='Zstart', c='r', label='Zs=20+0j')
+    sc1.markZ(50+0j, text='Ztarget', c='g', label='Zt=50+0j')
+    sc1.legend()
 
     #smith_chart.show()
