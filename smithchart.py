@@ -47,17 +47,17 @@ class SmithChart:
         Draws a circle with constant real part of impedance.
         """
         zlst = [x] + [complex(x, z) for z in np.logspace(0, 6, npts)]
-        self.drawZList(zlst, 'r')
+        self.drawZList(zlst, 'k')
 
         zlst = [x] + [complex(x, -z) for z in np.logspace(0, 6, npts)]
-        self.drawZList(zlst, 'r')
+        self.drawZList(zlst, 'k')
 
     def drawYCircle(self, y, npts=200):
         """
         Draws a circle with constant imaginary part.
         """
         zlst = [complex(0, y)] + [complex(z, y) for z in np.logspace(0, 6, npts)]
-        self.drawZList(zlst, 'b')
+        self.drawZList(zlst, 'k')
 
     def markZ(self, z, text=None, c='b', size=1):
         """
@@ -104,10 +104,15 @@ class SmithChart:
         return complex(y1 - 1 / self.Z0) / (y1 + 1 / self.Z0)
 
 if __name__ == '__main__':
-    fig, ax = plt.subplots(figsize=(8.0, 8.0))
-    smith_chart = SmithChart(fig=fig, ax=ax)
-    smith_chart.markZ(20+30j)
-    smith_chart.markZ(130-60j, text='Z1', c='r')
-    smith_chart.markZ(1-100j)
+    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(8.0, 8.0))
+    
+    sc1 = SmithChart(fig=fig, ax=ax1)
+    sc1.markZ(20+30j)
+    sc1.markZ(130-60j, text='Z1', c='r')
+    sc1.markZ(1-100j)
+    sc1 = SmithChart(fig=fig, ax=ax2)
+    sc1.markZ(20+30j)
+    sc1.markZ(130-60j, text='Z1', c='r')
+    sc1.markZ(1-100j)
 
     #smith_chart.show()
