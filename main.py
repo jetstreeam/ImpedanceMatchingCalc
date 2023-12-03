@@ -129,24 +129,22 @@ def printFormater(nameShunt:str, nameSerial:str, valueShunt:float, valueSerial:f
     else:
         return f"{serial}, {shunt}"
 
-def plotSmithChart(Z):
+def plotSmithChart(Z:dict, networks:list):
     """
     plots the smithchart for given values
     """
-    fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
+    
+    fig, axes = plt.subplots(nrows=int(np.ceil(len(networks)/2)), ncols=2, figsize=(16.0, np.ceil(len(networks)/2)*8))
 
-    schart1 = SmithChart(fig=fig, ax=ax1)
-    schart1.markZ(Z['Z_s'], c='r')
-    schart1.set_zstart_text(Z['Z_s'])
-    schart1.markZ(Z['Z_t'], c='g')
-    schart1.set_ztarget_text(Z['Z_t'])
-
-    schart2 = SmithChart(fig=fig, ax=ax2)
-    schart2.markZ(Z['Z_s'], c='r')
-    schart2.set_zstart_text(Z['Z_s'])
-    schart2.markZ(Z['Z_t'], c='g')
-    schart2.set_ztarget_text(Z['Z_t'])
-
+    for ax, i in zip(np.array(axes).flatten(), np.arange(len(np.array(axes).flatten()))):
+        
+        print(networks[i], i)
+        schart = SmithChart(fig=fig, ax=ax, Z0=Z['Z_0'])
+        schart.markZ(Z['Z_s'], c='r')
+        schart.set_zstart_text(Z['Z_s'])
+        schart.markZ(Z['Z_t'], c='g')
+        schart.set_ztarget_text(Z['Z_t'])
+        
 
 # define start and target impedance pairs
 Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
@@ -155,83 +153,80 @@ Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 15+50j, 'Z_t': 50+0j, 'Z_0': 30, 'f_0': 2.44e9},
             {'Z_s': 15+50j, 'Z_t': 50-10j, 'Z_0': 30, 'f_0': 2.44e9},
             {'Z_s': 30-45j, 'Z_t': 45-30j, 'Z_0': 30, 'f_0': 2.44e9},
-            {'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 13+60j, 'Z_t': 13-60j, 'Z_0': 60, 'f_0': 2.44e9},
             {'Z_s': 60-30j, 'Z_t': 60+0j, 'Z_0': 60, 'f_0': 2.44e9},
             {'Z_s': 60+20j, 'Z_t': 60+80j, 'Z_0': 60, 'f_0': 2.44e9}
           ]
 
-Zpairs = [{'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j, 'f_0': 2.44e9}]
+#Zpairs = [{'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j, 'f_0': 2.44e9}]
 
 # iterate all impedance pairs and print calculated networks
-for p in Zpairs:
-    r = {}
+for pair in Zpairs:
+    reactances = {}
+    networks = []
 
     print("---------------------------")
-    print(f"Zs: {p['Z_s']}, Zt: {p['Z_t']}\n")
+    print(f"Zs: {pair['Z_s']}, Zt: {pair['Z_t']}\n")
 
-    Rs = p['Z_s'].real
-    Xs = p['Z_s'].imag
-    Rt = p['Z_t'].real
-    Xt = p['Z_t'].imag
-    Z0 = p['Z_0']
-    f0 = p['f_0']
+    Rs = pair['Z_s'].real
+    Xs = pair['Z_s'].imag
+    Rt = pair['Z_t'].real
+    Xt = pair['Z_t'].imag
+    Z0 = pair['Z_0']
+    f0 = pair['f_0']
 
     # Rs = Rt
     if Rs == Rt:
-        r['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
-        r['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
+        reactances['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
+        reactances['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
     # Rs > Rt
     elif Rs > Rt:
-        r['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
+        reactances['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
         if abs(Xt) >= sqrt(Rt*(Rs-Rt)):
-            r['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
+            reactances['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
 
     # Rs < Rt
     else:
-        r['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
+        reactances['reversed'] = calcReversedReactances(Rs,Xs,Rt,Xt)
         if abs(Xs) >= sqrt(Rs*(Rt-Rs)):
             # Normal and reversed
-            r['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
-    
-    print(f"length: {len(r.keys())}")
+            reactances['normal'] = calcNormalReactances(Rs,Xs,Rt,Xt)
 
     # print resulting networks
-    if 'normal' in r.keys():
+    if 'normal' in reactances.keys():
         print(f"Network: normal")
-        X11, X12, X21, X22, Q = r['normal']
+        X11, X12, X21, X22, Q = reactances['normal']
 
         ParElem1_name, ParElem1_value, ParElem1_unit = getParallelElement(X11,f0)
         SerElem1_name, SerElem1_value, SerElem1_unit = getSerialElement(X21,f0)
         ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12,f0)
         SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22,f0)
 
-        print(printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
+        networks.append(printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
                 valueShunt=ParElem1_value, valueSerial=SerElem1_value,
                 unitShunt=ParElem1_unit, unitSerial=SerElem1_unit, networktype='normal'))
         
         if ParElem1_value != ParElem2_value and SerElem1_value != SerElem2_value:
-            print(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
+            networks.append(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
                     valueShunt=ParElem2_value, valueSerial=SerElem2_value,
                     unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='normal'))
-        plotSmithChart(p)
-
-    if 'reversed' in r.keys():
+    
+    if 'reversed' in reactances.keys():
         print(f"Network: reversed")
-        X11, X12, X21, X22, Q = r['reversed']
+        X11, X12, X21, X22, Q = reactances['reversed']
 
         ParElem1_name, ParElem1_value, ParElem1_unit = getParallelElement(X11,f0)
         SerElem1_name, SerElem1_value, SerElem1_unit = getSerialElement(X21,f0)
         ParElem2_name, ParElem2_value, ParElem2_unit = getParallelElement(X12,f0)
         SerElem2_name, SerElem2_value, SerElem2_unit = getSerialElement(X22,f0)
 
-        print(printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
+        networks.append(printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
                 valueShunt=ParElem1_value, valueSerial=SerElem1_value,
                 unitShunt=ParElem1_unit, unitSerial=SerElem1_unit, networktype='reversed'))
         
         if ParElem1_value != ParElem2_value and SerElem1_value != SerElem2_value:
-            print(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
+            networks.append(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
                     valueShunt=ParElem2_value, valueSerial=SerElem2_value,
-                    unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='reversed'))    
+                    unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='reversed'))
     
-        plotSmithChart(p)
+    plotSmithChart(Z=pair, networks=networks)
