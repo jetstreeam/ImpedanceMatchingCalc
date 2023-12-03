@@ -134,22 +134,18 @@ def plotSmithChart(Z):
     plots the smithchart for given values
     """
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
-    
-    label1 = 'Zstart='+str(Z['Z_s'])
-    label2 = 'Ztarget='+str(Z['Z_t'])
 
-    sc1 = SmithChart(fig=fig, ax=ax1)
-    sc1.markZ(Z['Z_s'], text='Zstart', c='r', label='')
-    sc1.markZ(Z['Z_t'], text='Ztarget', c='g', label='')
-    sc1.legend()
+    schart1 = SmithChart(fig=fig, ax=ax1)
+    schart1.markZ(Z['Z_s'], c='r')
+    schart1.set_zstart_text(Z['Z_s'])
+    schart1.markZ(Z['Z_t'], c='g')
+    schart1.set_ztarget_text(Z['Z_t'])
 
-    sc1 = SmithChart(fig=fig, ax=ax2)
-    sc1.markZ(Z['Z_s'], text='Zstart', c='r', label='')
-    sc1.markZ(Z['Z_t'], text='Ztarget', c='g', label='')
-    sc1.legend()
-
-
-
+    schart2 = SmithChart(fig=fig, ax=ax2)
+    schart2.markZ(Z['Z_s'], c='r')
+    schart2.set_zstart_text(Z['Z_s'])
+    schart2.markZ(Z['Z_t'], c='g')
+    schart2.set_ztarget_text(Z['Z_t'])
 
 
 # define start and target impedance pairs

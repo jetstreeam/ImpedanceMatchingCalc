@@ -20,8 +20,6 @@ class SmithChart:
         self.ax.set_axis_off()
         self.drawGrid()
         self.set_z0_text()
-        self.set_zstart_text(12)
-        self.set_ztarget_text(100)
 
     def save(self, filename):
         """
@@ -57,7 +55,7 @@ class SmithChart:
         zlst = [complex(0, y)] + [complex(z, y) for z in np.logspace(0, 6, npts)]
         self.drawZList(zlst, format)
 
-    def markZ(self, z, text=None, c='b', size=1):
+    def markZ(self, z, text=None, c='b'):
         """
         Marks an impedance with a dot.
         """
@@ -65,8 +63,6 @@ class SmithChart:
         self.ax.plot(g.real, g.imag, 'o' + c)
         if text:
             self.ax.text(g.real + 0.02, g.imag + 0.02, text, color=c, weight='demi')
-        
-        #plt.draw()
 
     def drawGrid(self):
         """
@@ -119,11 +115,6 @@ class SmithChart:
         Converts an admittance to a reflection coefficient.
         """
         return complex(y1 - 1 / self.Z0) / (y1 + 1 / self.Z0)
-    def legend(self):
-        """
-        shows the legend
-        """
-        self.ax.legend()
 
 if __name__ == '__main__':
     
@@ -132,11 +123,9 @@ if __name__ == '__main__':
     sc1 = SmithChart(fig=fig, ax=ax1)
     sc1.markZ(20+0j, text='', c='r')
     sc1.markZ(50+0j, text='', c='g')
-    sc1.legend()
 
     sc1 = SmithChart(fig=fig, ax=ax2)
     sc1.markZ(20+0j, text='', c='r')
     sc1.markZ(50+0j, text='', c='g')
-    sc1.legend()
 
     #smith_chart.show()
