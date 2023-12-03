@@ -135,17 +135,23 @@ def plotSmithChart(Z):
     """
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
     
+    label1 = 'Zstart='+str(Z['Z_s'])
+    label2 = 'Ztarget='+str(Z['Z_t'])
+
     sc1 = SmithChart(fig=fig, ax=ax1)
-    sc1.markZ(20+0j, text='Z1', c='r', label='Z1')
+    sc1.markZ(Z['Z_s'], text='Zstart', c='r', label='')
+    sc1.markZ(Z['Z_t'], text='Ztarget', c='g', label='')
     sc1.legend()
 
     sc1 = SmithChart(fig=fig, ax=ax2)
-    sc1.markZ(50+0j, text='Z1', c='r', label='Z2')
+    sc1.markZ(Z['Z_s'], text='Zstart', c='r', label='')
+    sc1.markZ(Z['Z_t'], text='Ztarget', c='g', label='')
     sc1.legend()
 
 
 
-    
+
+
 # define start and target impedance pairs
 Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50, 'f_0': 2.44e9},
@@ -159,7 +165,7 @@ Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 60+20j, 'Z_t': 60+80j, 'Z_0': 60, 'f_0': 2.44e9}
           ]
 
-#Zpairs = [{'Z_s': 60-30j, 'Z_t': 60+0j, 'Z_0': 60, 'f_0': 2.44e9}]
+Zpairs = [{'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j, 'f_0': 2.44e9}]
 
 # iterate all impedance pairs and print calculated networks
 for p in Zpairs:
@@ -212,6 +218,7 @@ for p in Zpairs:
             print(printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
                     valueShunt=ParElem2_value, valueSerial=SerElem2_value,
                     unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='normal'))
+        plotSmithChart(p)
 
     if 'reversed' in r.keys():
         print(f"Network: reversed")
@@ -231,65 +238,4 @@ for p in Zpairs:
                     valueShunt=ParElem2_value, valueSerial=SerElem2_value,
                     unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='reversed'))    
     
-#%%
-
-# SMITHCHART VARIANT ONE
-
-'''print(X21,X11)
-print(X22,X12)
-
-z_s = np.linspace(0,X21/Z0,100) + Xs/Z0
-r_s = np.ones_like(z_s)*Rs/Z0
-
-start = (r_s[-1]+1j*z_s[-1])
-way = 1/np.linspace(1/start,(1/(X11/Z0)),100)
-
-r_s=np.append(r_s,way.real)
-z_s=np.append(z_s,way.imag)
-
-
-o = np.array([Xs/Z0, Xt/Z0])
-'''
-
-fig = go.Figure(go.Scattersmith(imag=[60], real=[60]))
-fig.show()
-
-'''
-#%%
-from plotly import subplots, tools
-import plotly.graph_objects as go
-
-# Create data for the first Scatter Smith plot
-data1 = go.Scattersmith(imag=[60], real=[60])
-
-# Create data for the second Scatter Smith plot
-data2 = go.Scattersmith(imag=[30], real=[80])
-
-# Create subplots with 1 row and 2 columns
-fig = subplots.make_subplots(rows=1, cols=2, subplot_titles=['Scatter Smith Plot 1', 'Scatter Smith Plot 2'])
-
-# Add the first Scatter Smith plot to the first subplot
-fig.add_trace(data1, row=1, col=1)
-
-# Add the second Scatter Smith plot to the second subplot
-fig.add_trace(data2, row=1, col=2)
-
-# Update layout for better visualization
-fig.update_layout(showlegend=False)
-
-fig = subplots.make_subplots(cols=2)
-fig.add_trace(go.Scattersmith(imag=[1,2,3], real=[2,1,2]), row=1, col=1)
-fig.add_trace(go.Scattersmith(imag=[1,2,3], real=[2,1,2]), row=1, col=2)
-
-fig = subplots.make_subplots(
-    rows=2, 
-    cols=2,
-    start_cell="top-left", 
-    specs=[
-        [{"type": "scatter3d"}, {"type": "scatter3d"}], 
-        [{"type": "scatter3d"}, {"type": "scatter3d"}]
-    ]
-)
-
-# Show the plot
-fig.show()'''
+        plotSmithChart(p)

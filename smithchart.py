@@ -1,6 +1,8 @@
 #%%
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle, FancyArrowPatch, Rectangle
+
 
 class SmithChart:
     """
@@ -12,18 +14,14 @@ class SmithChart:
         Creates the figure and draws the grid.
         Z0: characteristic impedance
         """
-        #plt.ioff()
         self.Z0 = Z0
         self.fig = fig
         self.ax = ax
         self.ax.set_axis_off()
         self.drawGrid()
-
-    '''def show(self):
-        """
-        Shows the plot. The plot can't be updated after it has been closed.
-        """
-        plt.show()'''
+        self.set_z0_text()
+        self.set_zstart_text(12)
+        self.set_ztarget_text(100)
 
     def save(self, filename):
         """
@@ -42,29 +40,29 @@ class SmithChart:
         self.ax.plot(xlst, ylst, c)
         #plt.draw()
 
-    def drawXCircle(self, x, npts=200):
+    def drawXCircle(self, x, format=':r', npts=200):
         """
         Draws a circle with constant real part of impedance.
         """
         zlst = [x] + [complex(x, z) for z in np.logspace(0, 6, npts)]
-        self.drawZList(zlst, 'k')
+        self.drawZList(zlst, format)
 
         zlst = [x] + [complex(x, -z) for z in np.logspace(0, 6, npts)]
-        self.drawZList(zlst, 'k')
+        self.drawZList(zlst, format)
 
-    def drawYCircle(self, y, npts=200):
+    def drawYCircle(self, y, format=':r', npts=200):
         """
         Draws a circle with constant imaginary part.
         """
         zlst = [complex(0, y)] + [complex(z, y) for z in np.logspace(0, 6, npts)]
-        self.drawZList(zlst, 'k')
+        self.drawZList(zlst, format)
 
-    def markZ(self, z, text=None, c='b', size=1, label=None):
+    def markZ(self, z, text=None, c='b', size=1):
         """
         Marks an impedance with a dot.
         """
         g = self.z2gamma(z)
-        self.ax.plot(g.real, g.imag, 'o' + c, label=label)
+        self.ax.plot(g.real, g.imag, 'o' + c)
         if text:
             self.ax.text(g.real + 0.02, g.imag + 0.02, text, color=c, weight='demi')
         
@@ -74,24 +72,41 @@ class SmithChart:
         """
         Draws the Smith Chart grid.
         """
-        self.drawXCircle(0)
-        self.drawXCircle(self.Z0/5)
-        self.drawXCircle(self.Z0/2)
-        self.drawXCircle(self.Z0)
-        self.drawXCircle(self.Z0*2)
-        self.drawXCircle(self.Z0*5)
-        self.drawXCircle(self.Z0*10)
-        self.drawYCircle(0)
-        self.drawYCircle(self.Z0/5)
-        self.drawYCircle(-self.Z0/5)
-        self.drawYCircle(self.Z0/2)
-        self.drawYCircle(-self.Z0/2)
-        self.drawYCircle(self.Z0)
-        self.drawYCircle(-self.Z0)
-        self.drawYCircle(self.Z0*2)
-        self.drawYCircle(-self.Z0*2)
-        self.drawYCircle(self.Z0*5)
-        self.drawYCircle(-self.Z0*5)
+        self.drawXCircle(0,'-k')
+        self.drawXCircle(self.Z0/5,':r')
+        self.drawXCircle(self.Z0/2,':r')
+        self.drawXCircle(self.Z0,':r')
+        self.drawXCircle(self.Z0*2,':r')
+        self.drawXCircle(self.Z0*5,':r')
+        self.drawXCircle(self.Z0*10,':r')
+        self.drawYCircle(0,':k')
+        self.drawYCircle(self.Z0/5,':r')
+        self.drawYCircle(-self.Z0/5,':r')
+        self.drawYCircle(self.Z0/2,':r')
+        self.drawYCircle(-self.Z0/2,':r')
+        self.drawYCircle(self.Z0,':r')
+        self.drawYCircle(-self.Z0,':r')
+        self.drawYCircle(self.Z0*2,':r')
+        self.drawYCircle(-self.Z0*2,':r')
+        self.drawYCircle(self.Z0*5,':r')
+        self.drawYCircle(-self.Z0*5,':r')
+
+    def set_z0_text(self):
+        box = Rectangle(xy=(0.7, 1), width=0.3, height=0.1, ec='black', fc='none',)
+        self.ax.add_patch(box)
+        rx, ry = box.get_xy()
+        tx = rx + box.get_width() / 2.0
+        ty = ry + box.get_height() / 2.0
+        self.z0_text = self.ax.annotate(f"$Z_0:$ {self.Z0}", (tx, ty), color='black',
+                                        fontsize=10, ha='center', va='center')
+
+    def set_zstart_text(self, zs):
+        text = f"$Z_{{start}}:${zs}Ω"
+        self.z_start_text = self.ax.annotate(text, (-1, -1), color='r', fontsize=10, ha='left', va='center')
+
+    def set_ztarget_text(self, zt):
+        text = f"$Z_{{target}}:${zt}Ω"
+        self.z_target_text = self.ax.annotate(text, (0.6, -1), color='g', fontsize=10, ha='left', va='center')
 
     def z2gamma(self, zl):
         """
@@ -111,16 +126,17 @@ class SmithChart:
         self.ax.legend()
 
 if __name__ == '__main__':
+    
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
     
     sc1 = SmithChart(fig=fig, ax=ax1)
-    sc1.markZ(20+0j, text='Zstart', c='r', label='Zs=20+0j')
-    sc1.markZ(50+0j, text='Ztarget', c='g', label='Zt=50+0j')
+    sc1.markZ(20+0j, text='', c='r')
+    sc1.markZ(50+0j, text='', c='g')
     sc1.legend()
 
     sc1 = SmithChart(fig=fig, ax=ax2)
-    sc1.markZ(20+0j, text='Zstart', c='r', label='Zs=20+0j')
-    sc1.markZ(50+0j, text='Ztarget', c='g', label='Zt=50+0j')
+    sc1.markZ(20+0j, text='', c='r')
+    sc1.markZ(50+0j, text='', c='g')
     sc1.legend()
 
     #smith_chart.show()
