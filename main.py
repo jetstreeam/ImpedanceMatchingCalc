@@ -144,10 +144,11 @@ def plotSmithChart(Z:dict, networks:list):
         schart.set_zstart_text(Z['Z_s'])
         schart.markZ(Z['Z_t'], c='g')
         schart.set_ztarget_text(Z['Z_t'])
-        
+        schart.set_components_text(networks[i])
 
 # define start and target impedance pairs
-Zpairs = [{'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
+Zpairs = [{'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50, 'f_0': 2.44e9},
+            {'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j, 'f_0': 2.44e9},
             {'Z_s': 15+50j, 'Z_t': 50+0j, 'Z_0': 30, 'f_0': 2.44e9},

@@ -21,7 +21,6 @@ class SmithChart:
         self.drawGrid()
         self.set_z0_text()
 
-
     def save(self, filename):
         """
         Saves the plot to filename. The extension defines the filetype.
@@ -37,7 +36,6 @@ class SmithChart:
         xlst = [self.z2gamma(z).real for z in l]
         ylst = [self.z2gamma(z).imag for z in l]
         self.ax.plot(xlst, ylst, c)
-        #plt.draw()
 
     def drawXCircle(self, x, format=':r', npts=200):
         """
@@ -99,11 +97,15 @@ class SmithChart:
 
     def set_zstart_text(self, zs):
         text = f"$Z_{{start}}:${zs}Ω"
-        self.z_start_text = self.ax.annotate(text, (-1, -1), color='r', fontsize=10, ha='left', va='center')
+        self.ax.annotate(text, (-1, -1), color='r', fontsize=10, ha='left', va='center')
 
     def set_ztarget_text(self, zt):
         text = f"$Z_{{target}}:${zt}Ω"
-        self.z_target_text = self.ax.annotate(text, (0.6, -1), color='g', fontsize=10, ha='left', va='center')
+        self.ax.annotate(text, (0.6, -1), color='g', fontsize=10, ha='left', va='center')
+
+    def set_components_text(self, components:str):
+        self.ax.annotate(f"[1] {components.split(',')[0].strip()}", (-1, 1.1), color='black', fontsize=10, ha='left', va='center')
+        self.ax.annotate(f"[2] {components.split(',')[1].strip()}", (-1, 1), color='black', fontsize=10, ha='left', va='center')
 
     def z2gamma(self, zl):
         """
