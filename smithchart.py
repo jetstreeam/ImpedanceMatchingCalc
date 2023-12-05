@@ -25,15 +25,6 @@ class SmithChart:
         self.draw_grid()
         self.print_z0()
 
-    def save(self, filename):
-        """
-        Saves the plot to filename. The extension defines the filetype.
-        
-        Parameters:
-        - filename: str, the name of the file to save
-        """
-        self.fig.savefig(filename)
-
     def drawZcircles(self):
         """
         Draws impedance circles on the Smith Chart.
@@ -71,9 +62,11 @@ class SmithChart:
             i_center_admittance = (-1, 1 / const)
             i_center_neg_admittance = (-1, -1 / const)
             i_radius_admittance = 1 / const
-            circle_imaginary_admittance = Circle(i_center_admittance, i_radius_admittance, fc='none', ec='b', ls=':')
+            circle_imaginary_admittance = Circle(i_center_admittance, i_radius_admittance, 
+                                                 fc='none', ec='b', ls=':')
             circle_imaginary_admittance.set_clip_path(self.smith_border)
-            neg_circle_imaginary_admittance = Circle(i_center_neg_admittance, i_radius_admittance, fc='none', ec='b', ls=':')
+            neg_circle_imaginary_admittance = Circle(i_center_neg_admittance, i_radius_admittance, 
+                                                     fc='none', ec='b', ls=':')
             neg_circle_imaginary_admittance.set_clip_path(self.smith_border)
             self.ax.add_patch(circle_imaginary_admittance)
             self.ax.add_patch(neg_circle_imaginary_admittance)
@@ -111,14 +104,14 @@ class SmithChart:
 
     def print_z0(self):
         """
-        Prints the system impedance in the smith chart.
+        Prints the system impedance Z0 in the smith chart.
         """
         box = Rectangle(xy=(0.7, 1), width=0.3, height=0.1, ec='k', fc='none',)
         self.ax.add_patch(box)
-        rx, ry = box.get_xy()
-        tx = rx + box.get_width() / 2.0
-        ty = ry + box.get_height() / 2.0
-        self.z0_text = self.ax.annotate(f"$Z_0:$ {self.Z0}Ω", (tx, ty), color='k',
+        x, y = box.get_xy()
+        xx = x + box.get_width() / 2.0
+        yy = y + box.get_height() / 2.0
+        self.z0_text = self.ax.annotate(f"$Z_0:$ {self.Z0}Ω", (xx, yy), color='k',
                                         fontsize=10, ha='center', va='center')
 
     def print_zstart(self, zs):
@@ -168,7 +161,7 @@ class SmithChart:
         Converts an admittance to a reflection coefficient.
         
         Parameters:
-        - y1: float, admittance value
+        - y1: complex, admittance value
         
         Returns:
         - complex, reflection coefficient
@@ -176,11 +169,12 @@ class SmithChart:
         return complex(y1 - 1 / self.Z0) / (y1 + 1 / self.Z0)
 
 if __name__ == '__main__':
+    # Example for generating 2 smith charts in one subplot
     fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(16.0, 8.0))
     sc1 = SmithChart(fig=fig, ax=ax1)
     sc1.markZ(20 + 0j, text='', c='r')
     sc1.markZ(50 + 0j, text='', c='g')
 
-    sc1 = SmithChart(fig=fig, ax=ax2)
-    sc1.markZ(20 + 0j, text='', c='r')
-    sc1.markZ(50 + 0j, text='', c='g')
+    sc2 = SmithChart(fig=fig, ax=ax2)
+    sc2.markZ(20 + 0j, text='', c='r')
+    sc2.markZ(50 + 0j, text='', c='g')

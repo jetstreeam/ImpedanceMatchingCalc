@@ -20,9 +20,12 @@ si_prefixes = {'0': '',
 cap_lim = 0.9e-1
 ind_lim = 1e-5
 
-def addSiPrefix(number):
+def addSiPrefix(number:float):
     """
     returns the number with added SI-Prefix
+    
+    Parameters:
+    - number: float, number to add SI-prefix
     """
     if number == float("inf"):
         return ''
@@ -37,14 +40,21 @@ def addSiPrefix(number):
 def calcL(X, f):
     """
     returns the calculated inductance or 0 if it is beyond ind_lim
+    
+    Parameters:
+    - X: float, Impedance value
+    - f: int, frequency
     """
     return X/(2*np.pi*f) if X/(2*np.pi*f) < ind_lim else 0
 
 def calcC(X, f):
     """
     returns the calculated capacity or 0 if it is beyond cap_lim
+    
+    Parameters:
+    - X: float, Impedance value
+    - f: int, frequency
     """
-    # or 1/(2*np.pi*f*X) < cap_lim
     if X == 0:
         return 0
     else:
@@ -53,6 +63,12 @@ def calcC(X, f):
 def calcNormalReactances(Rs, Xs, Rt, Xt):
     """
     returns the calculated reactances in normal arrangement for given start and target impedances
+    
+    Parameters:
+    - Rs: float, real part of start impedance
+    - Xs: float, imaginary part of start impedance
+    - Rt: float, real part of target impedance
+    - Xt: float, imaginary part of target impedance
     """
     Q = sqrt((Rs/Rt)-1+Xs**2/(Rs*Rt))
     if Rt == Rs:
@@ -70,6 +86,12 @@ def calcNormalReactances(Rs, Xs, Rt, Xt):
 def calcReversedReactances(Rs, Xs, Rt, Xt):
     """
     returns the calculated reactances in reversed arrangement for given start and target impedances
+    
+    Parameters:
+    - Rs: float, real part of start impedance
+    - Xs: float, imaginary part of start impedance
+    - Rt: float, real part of target impedance
+    - Xt: float, imaginary part of target impedance
     """
     Q = sqrt((Rt/Rs)-1+Xt**2/(Rs*Rt))
     if Rt == Rs:
@@ -87,6 +109,10 @@ def calcReversedReactances(Rs, Xs, Rt, Xt):
 def getParallelElement(X, f):
     """
     returns the calculated parallel L or C value with units
+    
+    Parameters:
+    - X: float, Impedance value
+    - f: int, frequency
     """
     if X == float("inf"):
         return ('inf',float("inf"),'')
@@ -100,6 +126,10 @@ def getParallelElement(X, f):
 def getSerialElement(X,f):
     """
     returns the calculated serial L or C value with units
+    
+    Parameters:
+    - X: float, Impedance value
+    - f: int, frequency
     """
     if X == float("inf"):
         return ('inf',float("inf"),'')
@@ -113,6 +143,15 @@ def getSerialElement(X,f):
 def printFormater(nameShunt:str, nameSerial:str, valueShunt:float, valueSerial:float, unitShunt:str, unitSerial:str, networktype='normal'):
     """
     prints a found network
+    
+    Parameters:
+    - nameShunt: str, name of shunt element
+    - nameSerial: str, name of serial element
+    - valueShunt: float, value of shunt element
+    - valueSerial: float, value of serial element
+    - unitShunt: str, unit of shunt element
+    - unitSerial: str, unit of serial element
+    - networktype: str, type of network (normal, reversed)
     """
     if abs(valueShunt) == float("inf"):
         shunt = f"no shunt element"
@@ -123,18 +162,24 @@ def printFormater(nameShunt:str, nameSerial:str, valueShunt:float, valueSerial:f
     else:
         serial = f"{nameSerial}: {addSiPrefix(valueSerial)}{unitSerial}"
 
-    if networktype == 'normal': 
-        return f"{shunt}, {serial}"
-    else:
-        return f"{serial}, {shunt}"
+    return f"{shunt}, {serial}"
 
 def plotSmithChart(Z:dict, networks:list):
     """
     plots the smithchart for given values
-    """
-    
-    fig, axes = plt.subplots(nrows=int(np.ceil(len(networks)/2)), ncols=2, figsize=(16.0, np.ceil(len(networks)/2)*8))
 
+    Parameters:
+    - Z: dict, impedance pair to match
+    - networks: list of strings, found networks for matching
+    """
+    # create subplots depending on number of found networks
+    nrows = int(np.ceil(len(networks)/2))
+    ncols = 1 if len(networks) == 1 else 2
+
+    fig, axes = plt.subplots(nrows=nrows, ncols=ncols, 
+                             figsize=(ncols*8.0, nrows*8))
+
+    # create smith charts for every network
     for ax, i in zip(np.array(axes).flatten(), np.arange(len(np.array(axes).flatten()))):
         schart = SmithChart(fig=fig, ax=ax, Z0=Z['Z_0'])
         schart.markZ(Z['Z_s'], c='r')
@@ -144,8 +189,7 @@ def plotSmithChart(Z:dict, networks:list):
         schart.set_components_text(networks[i])
 
 # define start and target impedance pairs
-Zpairs = [{'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50, 'f_0': 2.44e9},
-            {'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
+Zpairs = [  {'Z_s': 20+0j, 'Z_t': 50+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 20-10j, 'Z_t': 60+60j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 15+50j, 'Z_t': 50+0j, 'Z_0': 30, 'f_0': 2.44e9},
@@ -155,9 +199,6 @@ Zpairs = [{'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50, 'f_0': 2.44e9},
             {'Z_s': 60-30j, 'Z_t': 60+0j, 'Z_0': 60, 'f_0': 2.44e9},
             {'Z_s': 60+20j, 'Z_t': 60+80j, 'Z_0': 60, 'f_0': 2.44e9}
           ]
-
-#Zpairs = [{'Z_s': 100+75j, 'Z_t': 30+0, 'Z_0': 50j, 'f_0': 2.44e9}]
-#Zpairs = [{'Z_s': 120+0j, 'Z_t': 60+0j, 'Z_0': 50, 'f_0': 2.44e9}]
 
 # iterate all impedance pairs and print calculated networks
 for pair in Zpairs:
@@ -204,15 +245,17 @@ for pair in Zpairs:
         network = printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
                 valueShunt=ParElem1_value, valueSerial=SerElem1_value,
                 unitShunt=ParElem1_unit, unitSerial=SerElem1_unit, networktype='normal')
-        networks.append(network)
-        print(network)
+        if network not in networks:
+            networks.append(network)
+            print(network)
         
         if ParElem1_value != ParElem2_value and SerElem1_value != SerElem2_value:
             network = printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
                     valueShunt=ParElem2_value, valueSerial=SerElem2_value,
                     unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='normal')
-            networks.append(network)
-            print(network)
+            if network not in networks:
+                networks.append(network)
+                print(network)
     
     if 'reversed' in reactances.keys():
         print(f"Network: reversed")
@@ -226,14 +269,18 @@ for pair in Zpairs:
         network = printFormater(nameShunt=ParElem1_name, nameSerial=SerElem1_name, 
                 valueShunt=ParElem1_value, valueSerial=SerElem1_value,
                 unitShunt=ParElem1_unit, unitSerial=SerElem1_unit, networktype='reversed')
-        networks.append(network)
-        print(network)
+        if network not in networks:
+                networks.append(network)
+                print(network)
         
         if ParElem1_value != ParElem2_value and SerElem1_value != SerElem2_value:
             network = printFormater(nameShunt=ParElem2_name, nameSerial=SerElem2_name, 
                     valueShunt=ParElem2_value, valueSerial=SerElem2_value,
                     unitShunt=ParElem2_unit, unitSerial=SerElem2_unit, networktype='reversed')
-            networks.append(network)
-            print(network)
+            if network not in networks:
+                networks.append(network)
+                print(network)
 
+    # plot smith charts for all found networks
     plotSmithChart(Z=pair, networks=networks)
+
