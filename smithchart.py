@@ -33,16 +33,19 @@ class SmithChart:
             # Draw Constant Real Impedance Circles
             center_impedance = (const / (const + 1), 0)
             radius_impedance = 1 / (const + 1)
-            circle_impedance = Circle(center_impedance, radius_impedance, fc='none', ec='r', ls=':')
+            circle_impedance = Circle(center_impedance, radius_impedance, 
+                                      fc='none', ec='r', ls=':')
             self.ax.add_patch(circle_impedance)
 
             # Draw Constant Imaginary Impedance Circles
             i_center_impedance = (1, 1 / const)
             i_center_neg_impedance = (1, -1 / const)
             i_radius = 1 / const
-            circle_imaginary = Circle(i_center_impedance, i_radius, fc='none', ec='r', ls=':')
+            circle_imaginary = Circle(i_center_impedance, i_radius, 
+                                      fc='none', ec='r', ls=':')
             circle_imaginary.set_clip_path(self.smith_border)
-            neg_circle_imaginary = Circle(i_center_neg_impedance, i_radius, fc='none', ec='r', ls=':')
+            neg_circle_imaginary = Circle(i_center_neg_impedance, i_radius, 
+                                          fc='none', ec='r', ls=':')
             neg_circle_imaginary.set_clip_path(self.smith_border)
             self.ax.add_patch(circle_imaginary)
             self.ax.add_patch(neg_circle_imaginary)
@@ -55,7 +58,8 @@ class SmithChart:
             # Draw Constant Real Admittance Circles
             center_admittance = (- (const / (const + 1)), 0)
             radius_admittance = 1 / (const + 1)
-            circle_admittance = Circle(center_admittance, radius_admittance, fc='none', ec='b', ls=':')
+            circle_admittance = Circle(center_admittance, radius_admittance, 
+                                       fc='none', ec='b', ls=':')
             self.ax.add_patch(circle_admittance)
 
             # Draw Constant Imaginary Admittance Circles
@@ -65,7 +69,8 @@ class SmithChart:
             circle_imaginary_admittance = Circle(i_center_admittance, i_radius_admittance, 
                                                  fc='none', ec='b', ls=':')
             circle_imaginary_admittance.set_clip_path(self.smith_border)
-            neg_circle_imaginary_admittance = Circle(i_center_neg_admittance, i_radius_admittance, 
+            neg_circle_imaginary_admittance = Circle(i_center_neg_admittance, 
+                                                     i_radius_admittance, 
                                                      fc='none', ec='b', ls=':')
             neg_circle_imaginary_admittance.set_clip_path(self.smith_border)
             self.ax.add_patch(circle_imaginary_admittance)
@@ -141,8 +146,10 @@ class SmithChart:
         Parameters:
         - components: str, components used for impedance matching
         """
-        self.ax.annotate(f"[1] {components.split(',')[0].strip()}", (-1, 1.1), color='k', fontsize=10, ha='left', va='center')
-        self.ax.annotate(f"[2] {components.split(',')[1].strip()}", (-1, 1), color='k', fontsize=10, ha='left', va='center')
+        self.ax.annotate(f"[1] {components.split(',')[0].strip()}", (-1, 1.1), color='k', 
+                         fontsize=10, ha='left', va='center')
+        self.ax.annotate(f"[2] {components.split(',')[1].strip()}", (-1, 1), color='k', 
+                         fontsize=10, ha='left', va='center')
 
     def z2gamma(self, zl):
         """

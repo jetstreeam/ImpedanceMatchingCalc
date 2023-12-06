@@ -283,4 +283,3 @@ for pair in Zpairs:
 
     # plot smith charts for all found networks
     plotSmithChart(Z=pair, networks=networks)
-
